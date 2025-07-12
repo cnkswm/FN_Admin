@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>Thainest Slider Admin</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; }
+    input, textarea, select { width: 100%; margin-top: 10px; }
+    button { margin-top: 10px; padding: 8px 16px; }
+    .status { margin-top: 10px; color: green; }
+    .error { color: red; }
+    .section { border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 30px; }
+    h3 { margin-top: 0; }
+    label { font-weight: bold; }
+    .slide-preview { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
+    .slide-img { width: 120px; height: 120px; object-fit: contain; border: 1px solid #ccc; border-radius: 8px; background: #fafafa; }
+    .slide-controls { flex: 1; }
+    .slide-index { font-weight: bold; margin-right: 10px; }
+    .slide-form-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .slide-form-row input[type="text"] { width: 200px; }
+    .op-hour-row { display: flex; gap: 10px; margin-bottom: 5px; }
+    .center-img-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+    .service-card-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Thainest Slider Admin</h2>
+
+  <div class="section">
+    <h3>เลือกไฟล์</h3>
+    <select id="fileSelect">
+      <option value="Slider.jsx">Slider.jsx</option>
+      <option value="NestWelcome.jsx">NestWelcome.jsx</option>
+      <option value="Aboutus.jsx">Aboutus.jsx</option>
+      <option value="BlogSection.jsx">BlogSection.jsx</option>
+      <option value="Contact.jsx">Contact.jsx</option>
+      <option value="Services.jsx">Services.jsx</option>
+    </select>
+  </div>
+
+  <!-- Section: ข้อมูล Slide ทั้งหมด -->
+  <div class="section" id="sectionSlides">
+    <h3>สไลด์ทั้งหมด</h3>
+    <div id="slidesContainer"></div>
+    <form id="addSlideForm" enctype="multipart/form-data">
+      <label>เพิ่ม Slide ใหม่</label>
+      <div class="slide-form-row">
+        <input id="newHeadline" type="text" placeholder="Headline ใหม่" required />
+        <input id="newSvg" type="file" accept=".svg" required />
+        <button type="submit">เพิ่ม Slide</button>
+      </div>
+    </form>
+    <div class="status" id="statusSlides"></div>
+  </div>
+
+  <!-- Section: ปุ่ม Buy Voucher -->
+  <div class="section" id="sectionBuyVoucher">
+    <h3>ปุ่ม Buy Voucher</h3>
+    <form id="buyVoucherForm">
+      <label for="buttonText">ข้อความในปุ่ม:</label>
+      <input id="buttonText" type="text" />
+      <label for="buttonUrl">ลิงก์ (URL):</label>
+      <input id="buttonUrl" type="text" />
+      <button type="submit">บันทึกการแก้ไขปุ่ม</button>
+    </form>
+    <div class="status" id="statusBtn"></div>
+  </div>
+
+  <!-- Section: NestWelcome Content -->
+  <div class="section" id="sectionNestWelcome">
+    <h3>แก้ไขข้อความ NestWelcome</h3>
+    <form id="nestWelcomeForm">
+      <label>Title</label>
+      <input id="nwTitle" type="text" />
+      <label>Subtitle</label>
+      <input id="nwSubtitle" type="text" />
+      <label>Description</label>
+      <textarea id="nwDesc"></textarea>
+      <label>Book Button Text</label>
+      <input id="nwBookBtnText" type="text" />
+      <label>Book Button Link</label>
+      <input id="nwBookBtnLink" type="text" />
+      <label>View All Button Text</label>
+      <input id="nwViewAllBtnText" type="text" />
+      <label>View All Button Link</label>
+      <input id="nwViewAllBtnLink" type="text" />
+      <button type="submit">บันทึก</button>
+    </form>
+    <div class="status" id="statusNestWelcome"></div>
+  </div>
+
+  <div class="section" id="sectionAboutus" style="display:none;">
+    <h3>แก้ไขข้อความ Aboutus</h3>
+    <form id="aboutusForm">
+      <label>nurturingTitle</label>
+      <input id="auNurturingTitle" type="text" />
+      <label>nurturingDesc</label>
+      <textarea id="auNurturingDesc"></textarea>
+      <label>servicesTitle</label>
+      <input id="auServicesTitle" type="text" />
+      <label>servicesDesc</label>
+      <textarea id="auServicesDesc"></textarea>
+      <button type="submit">บันทึกข้อความหลัก</button>
+    </form>
+    <div class="status" id="statusAboutus"></div>
+    <h4>Service Cards</h4>
+    <div id="serviceCardsContainer"></div>
+    <form id="addServiceCardForm" enctype="multipart/form-data">
+      <label>เพิ่ม Service Card ใหม่</label>
+      <div class="slide-form-row">
+        <input id="newCardAlt" type="text" placeholder="alt" required />
+        <input id="newCardBtnText" type="text" placeholder="buttonText" required />
+        <input id="newCardLink" type="text" placeholder="link" required />
+        <input id="newCardSvg" type="file" accept=".svg" required />
+        <button type="submit">เพิ่ม Service Card</button>
+      </div>
+  </form>
+    <div class="status" id="statusServiceCard"></div>
+  </div>
+
+  <div class="section" id="sectionBlogSection" style="display:none;">
+    <h3>แก้ไข BlogSection</h3>
+    <form id="blogSectionForm">
+      <label>Environment Text (ซ้าย)</label>
+      <input id="blogEnvLeft" type="text" />
+      <label>Environment Text (ขวา)</label>
+      <input id="blogEnvRight" type="text" />
+      <label>Interior Text (แต่ละบรรทัด 1 ข้อความ)</label>
+      <textarea id="blogInteriorText" rows="3"></textarea>
+      <label>Wellness Journal Title</label>
+      <input id="blogJournalTitle" type="text" />
+      <label>Reconnect Title1</label>
+      <input id="blogReconnectTitle1" type="text" />
+      <label>Reconnect Title2</label>
+      <input id="blogReconnectTitle2" type="text" />
+      <label>Reconnect Desc</label>
+      <textarea id="blogReconnectDesc" rows="2"></textarea>
+      <label>Reconnect Button Text</label>
+      <input id="blogReconnectBtnText" type="text" />
+      <label>Reconnect Button URL</label>
+      <input id="blogReconnectBtnUrl" type="text" />
+      <button type="submit">บันทึก BlogSection</button>
+    </form>
+    <div class="status" id="statusBlogSection"></div>
+    <h4>Blog Posts</h4>
+    <div id="blogPostsContainer"></div>
+    <form id="addBlogPostForm" enctype="multipart/form-data">
+      <label>เพิ่ม Blog Post ใหม่</label>
+      <div class="slide-form-row">
+        <input id="newBlogAlt" type="text" placeholder="alt" required />
+        <input id="newBlogTitle" type="text" placeholder="title" required />
+        <input id="newBlogLink" type="text" placeholder="link" required />
+        <input id="newBlogSvg" type="file" accept=".svg" required />
+        <button type="submit">เพิ่ม Blog Post</button>
+      </div>
+    </form>
+    <div class="status" id="statusBlogPost"></div>
+  </div>
+
+  <div class="section" id="sectionContact" style="display:none;">
+    <h3>แก้ไขข้อมูลติดต่อ (Contact)</h3>
+    <form id="contactForm">
+      <label>Title</label>
+      <input id="contactTitle" type="text" />
+      <label>Phone</label>
+      <input id="contactPhone" type="text" />
+      <label>Address</label>
+      <input id="contactAddress" type="text" />
+      <label>Facebook Name</label>
+      <input id="contactFbName" type="text" />
+      <label>Facebook URL</label>
+      <input id="contactFbUrl" type="text" />
+      <label>Operation Title</label>
+      <input id="contactOpTitle" type="text" />
+      <label>Operation Note</label>
+      <input id="contactOpNote" type="text" />
+      <label>Operation Hours (เพิ่ม/ลบแถวได้)</label>
+      <div id="operationHoursContainer"></div>
+      <button type="button" id="addOpHourBtn">เพิ่มแถวเวลา</button>
+      <button type="submit">บันทึก Contact</button>
+    </form>
+    <div class="status" id="statusContact"></div>
+  </div>
+
+  <div class="section" id="sectionServices" style="display:none;">
+    <h3>แก้ไขข้อมูล Services</h3>
+    <form id="servicesForm">
+      <label>Hero Image (servicesimg.svg)</label>
+      <input type="file" id="heroImgInput" accept=".svg" />
+      <img id="heroImgPreview" style="max-width:120px;display:block;margin:8px 0;" />
+      <label>Center Images</label>
+      <div id="centerImagesContainer"></div>
+      <label>Book Button Text</label>
+      <input id="bookBtnText" type="text" />
+      <label>Book Button URL</label>
+      <input id="bookBtnUrl" type="text" />
+      <h4>Massage Services</h4>
+      <div id="massageServicesContainer"></div>
+      <button type="button" id="addMassageCardBtn">เพิ่ม Massage Card</button>
+      <h4>Facial Services</h4>
+      <div id="facialServicesContainer"></div>
+      <button type="button" id="addFacialCardBtn">เพิ่ม Facial Card</button>
+      <button type="submit">บันทึก Services</button>
+    </form>
+    <div class="status" id="statusServices"></div>
+  </div>
+
+  <script>
+    // === BASE_URL ของ Backend ที่ Railway ===
+    const BASE_URL = 'https://bnadmin-production.up.railway.app';
+
+    // --- Section: Slides ---
+    let slides = [];
+    let slidesLoaded = false;
+    async function fetchSlides() {
+      document.getElementById('slidesContainer').innerHTML = 'กำลังโหลด...';
+      try {
+        const res = await fetch(`${BASE_URL}/slides`);
+        const data = await res.json();
+        slides = data.slides || [];
+        slidesLoaded = true;
+        renderSlides();
+        document.getElementById('statusSlides').textContent = '';
+      } catch (e) {
+        document.getElementById('slidesContainer').innerHTML = '';
+        document.getElementById('statusSlides').textContent = 'เกิดข้อผิดพลาดในการโหลด slides';
+        document.getElementById('statusSlides').className = 'status error';
+      }
+    }
+
+    function renderSlides() {
+      const container = document.getElementById('slidesContainer');
+      container.innerHTML = '';
+      if (!slides.length) {
+        container.innerHTML = '<div>ยังไม่มี slide</div>';
+        return;
+      }
+      slides.forEach((slide, idx) => {
+        const div = document.createElement('div');
+        div.className = 'slide-preview';
+        // รูปภาพ preview
+        const img = document.createElement('img');
+        img.className = 'slide-img';
+        img.src = `https://raw.githubusercontent.com/PtrwTg/Thainest/main/src/components/Slider/${slide.image}`;
+        img.alt = slide.image;
+        // controls
+        const controls = document.createElement('div');
+        controls.className = 'slide-controls';
+        controls.innerHTML = `
+          <div class="slide-form-row">
+            <span class="slide-index">#${idx + 1}</span>
+            <input type="text" value="${slide.headline.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" id="headline${idx}" />
+            <button type="button" onclick="updateHeadline(${idx})">บันทึก Headline</button>
+            <button type="button" onclick="deleteSlide(${idx})" style="color:red;">ลบ Slide</button>
+          </div>
+          <div class="slide-form-row">
+            <input type="file" accept=".svg" id="svg${idx}" />
+            <button type="button" onclick="updateImage(${idx})">อัปเดตรูปภาพ</button>
+          </div>
+          <div style="font-size:12px;color:#888;">ไฟล์: ${slide.image}</div>
+        `;
+        div.appendChild(img);
+        div.appendChild(controls);
+        container.appendChild(div);
+      });
+    }
+
+    // เพิ่ม Slide ใหม่
+    document.getElementById('addSlideForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const headline = document.getElementById('newHeadline').value;
+      const fileInput = document.getElementById('newSvg');
+      if (!fileInput.files.length) {
+        document.getElementById('statusSlides').textContent = 'กรุณาเลือกไฟล์ SVG';
+        document.getElementById('statusSlides').className = 'status error';
+        return;
+      }
+      const formData = new FormData();
+      formData.append('svgfile', fileInput.files[0]);
+      formData.append('headline', headline);
+      try {
+        const res = await fetch(`${BASE_URL}/slides/add`, {
+          method: 'POST',
+          body: formData
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusSlides').textContent = textRes;
+          document.getElementById('statusSlides').className = 'status';
+          document.getElementById('newHeadline').value = '';
+          document.getElementById('newSvg').value = '';
+          fetchSlides();
+        } else {
+          document.getElementById('statusSlides').textContent = textRes;
+          document.getElementById('statusSlides').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusSlides').textContent = 'เกิดข้อผิดพลาดในการเพิ่ม slide';
+        document.getElementById('statusSlides').className = 'status error';
+      }
+    });
+
+    // ฟังก์ชัน global สำหรับปุ่มใน renderSlides
+    window.updateHeadline = async function(idx) {
+      const input = document.getElementById('headline' + idx);
+      const headline = input.value;
+      try {
+        const res = await fetch(`${BASE_URL}/slides/update-headline`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ index: idx, headline })
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusSlides').textContent = textRes;
+          document.getElementById('statusSlides').className = 'status';
+          fetchSlides();
+        } else {
+          document.getElementById('statusSlides').textContent = textRes;
+          document.getElementById('statusSlides').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusSlides').textContent = 'เกิดข้อผิดพลาดในการบันทึก headline';
+        document.getElementById('statusSlides').className = 'status error';
+      }
+    }
+
+    window.updateImage = async function(idx) {
+      const fileInput = document.getElementById('svg' + idx);
+      if (!fileInput.files.length) {
+        document.getElementById('statusSlides').textContent = 'กรุณาเลือกไฟล์ SVG';
+        document.getElementById('statusSlides').className = 'status error';
+        return;
+      }
+      const formData = new FormData();
+      formData.append('svgfile', fileInput.files[0]);
+      formData.append('index', idx);
+      try {
+        const res = await fetch(`${BASE_URL}/slides/update-image`, {
+          method: 'POST',
+          body: formData
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusSlides').textContent = textRes;
+          document.getElementById('statusSlides').className = 'status';
+          fetchSlides();
+        } else {
+          document.getElementById('statusSlides').textContent = textRes;
+          document.getElementById('statusSlides').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusSlides').textContent = 'เกิดข้อผิดพลาดในการอัปเดตรูปภาพ';
+        document.getElementById('statusSlides').className = 'status error';
+      }
+    }
+
+    window.deleteSlide = async function(idx) {
+      if (!confirm('ยืนยันการลบ slide นี้?')) return;
+      try {
+        const res = await fetch(`${BASE_URL}/slides/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ index: idx })
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusSlides').textContent = textRes;
+          document.getElementById('statusSlides').className = 'status';
+          fetchSlides();
+        } else {
+          document.getElementById('statusSlides').textContent = textRes;
+          document.getElementById('statusSlides').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusSlides').textContent = 'เกิดข้อผิดพลาดในการลบ slide';
+        document.getElementById('statusSlides').className = 'status error';
+      }
+    }
+
+    // --- Section: Buy Voucher Button ---
+    let currentBtnSha = "";
+    async function fetchButton() {
+      try {
+        const res = await fetch(`${BASE_URL}/buy-voucher-button`);
+        const data = await res.json();
+        document.getElementById('buttonText').value = data.text || "";
+        document.getElementById('buttonUrl').value = data.url || "";
+        currentBtnSha = data.sha || "";
+        document.getElementById('statusBtn').textContent = "โหลดข้อมูลปุ่มสำเร็จ";
+        document.getElementById('statusBtn').className = "status";
+      } catch (e) {
+        document.getElementById('statusBtn').textContent = "เกิดข้อผิดพลาดในการโหลดข้อมูลปุ่ม";
+        document.getElementById('statusBtn').className = "status error";
+      }
+    }
+    document.getElementById('buyVoucherForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const text = document.getElementById('buttonText').value;
+      const url = document.getElementById('buttonUrl').value;
+      if (!currentBtnSha) {
+        document.getElementById('statusBtn').textContent = "ไม่พบ sha ของไฟล์";
+        document.getElementById('statusBtn').className = "status error";
+        return;
+      }
+      try {
+        const res = await fetch(`${BASE_URL}/buy-voucher-button`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text, url, sha: currentBtnSha })
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusBtn').textContent = textRes;
+          document.getElementById('statusBtn').className = "status";
+          fetchButton();
+        } else {
+          document.getElementById('statusBtn').textContent = textRes;
+          document.getElementById('statusBtn').className = "status error";
+        }
+      } catch (e) {
+        document.getElementById('statusBtn').textContent = "เกิดข้อผิดพลาดในการบันทึก";
+        document.getElementById('statusBtn').className = "status error";
+      }
+    });
+
+    // --- Section: NestWelcome ---
+    let nwSha = null;
+    async function fetchNestWelcome() {
+      try {
+        const res = await fetch(`${BASE_URL}/nestwelcome-content`);
+        const data = await res.json();
+        nwSha = data.sha;
+        document.getElementById('nwTitle').value = data.title || '';
+        document.getElementById('nwSubtitle').value = data.subtitle || '';
+        document.getElementById('nwDesc').value = data.description || '';
+        document.getElementById('nwBookBtnText').value = (data.bookButton && data.bookButton.text) || '';
+        document.getElementById('nwBookBtnLink').value = (data.bookButton && data.bookButton.link) || '';
+        document.getElementById('nwViewAllBtnText').value = (data.viewAllButton && data.viewAllButton.text) || '';
+        document.getElementById('nwViewAllBtnLink').value = (data.viewAllButton && data.viewAllButton.link) || '';
+        document.getElementById('statusNestWelcome').textContent = '';
+      } catch (e) {
+        document.getElementById('statusNestWelcome').textContent = 'โหลดข้อมูลไม่สำเร็จ';
+        document.getElementById('statusNestWelcome').className = 'status error';
+      }
+    }
+
+    document.getElementById('nestWelcomeForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const body = {
+        title: document.getElementById('nwTitle').value,
+        subtitle: document.getElementById('nwSubtitle').value,
+        description: document.getElementById('nwDesc').value,
+        bookButton: {
+          text: document.getElementById('nwBookBtnText').value,
+          link: document.getElementById('nwBookBtnLink').value
+        },
+        viewAllButton: {
+          text: document.getElementById('nwViewAllBtnText').value,
+          link: document.getElementById('nwViewAllBtnLink').value
+        },
+        sha: nwSha
+      };
+      try {
+        const res = await fetch(`${BASE_URL}/nestwelcome-content`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusNestWelcome').textContent = textRes;
+          document.getElementById('statusNestWelcome').className = 'status';
+          fetchNestWelcome();
+        } else {
+          document.getElementById('statusNestWelcome').textContent = textRes;
+          document.getElementById('statusNestWelcome').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusNestWelcome').textContent = 'เกิดข้อผิดพลาดในการบันทึก';
+        document.getElementById('statusNestWelcome').className = 'status error';
+      }
+    });
+
+    let aboutusSha = null;
+    let aboutusContent = {};
+    let serviceCards = [];
+    async function fetchAboutus() {
+      try {
+        const res = await fetch(`${BASE_URL}/aboutus-content`);
+        const data = await res.json();
+        aboutusSha = data.sha;
+        aboutusContent = data;
+        serviceCards = data.serviceCards || [];
+        document.getElementById('auNurturingTitle').value = data.nurturingTitle || '';
+        document.getElementById('auNurturingDesc').value = data.nurturingDesc || '';
+        document.getElementById('auServicesTitle').value = data.servicesTitle || '';
+        document.getElementById('auServicesDesc').value = data.servicesDesc || '';
+        renderServiceCards();
+        document.getElementById('statusAboutus').textContent = '';
+      } catch (e) {
+        document.getElementById('statusAboutus').textContent = 'โหลดข้อมูลไม่สำเร็จ';
+        document.getElementById('statusAboutus').className = 'status error';
+      }
+    }
+    function renderServiceCards() {
+      const container = document.getElementById('serviceCardsContainer');
+      container.innerHTML = '';
+      if (!serviceCards.length) {
+        container.innerHTML = '<div>ยังไม่มี service card</div>';
+        return;
+      }
+      serviceCards.forEach((card, idx) => {
+        const div = document.createElement('div');
+        div.className = 'slide-preview';
+        const img = document.createElement('img');
+        img.className = 'slide-img';
+        img.src = `https://raw.githubusercontent.com/PtrwTg/Thainest/main/src/components/Aboutus/${card.image}`;
+        img.alt = card.alt;
+        const controls = document.createElement('div');
+        controls.className = 'slide-controls';
+        controls.innerHTML = `
+          <div class="slide-form-row">
+            <span class="slide-index">#${idx + 1}</span>
+            <input type="text" value="${card.alt.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" id="alt${idx}" />
+            <input type="text" value="${card.buttonText.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" id="btnText${idx}" />
+            <input type="text" value="${card.link.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" id="link${idx}" />
+            <button type="button" onclick="deleteServiceCard(${idx})" style="color:red;">ลบ</button>
+          </div>
+        `;
+        div.appendChild(img);
+        div.appendChild(controls);
+        container.appendChild(div);
+      }); 
+    }
+    document.getElementById('aboutusForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!aboutusSha) {
+        document.getElementById('statusAboutus').textContent = 'ไม่พบ sha ของไฟล์';
+        document.getElementById('statusAboutus').className = 'status error';
+        return;
+      }
+      const body = {
+        aboutusContent: {
+          nurturingTitle: document.getElementById('auNurturingTitle').value,
+          nurturingDesc: document.getElementById('auNurturingDesc').value,
+          servicesTitle: document.getElementById('auServicesTitle').value,
+          servicesDesc: document.getElementById('auServicesDesc').value,
+          serviceCards: serviceCards
+        },
+        sha: aboutusSha
+      };
+      try {
+        const res = await fetch(`${BASE_URL}/aboutus-content`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusAboutus').textContent = textRes;
+          document.getElementById('statusAboutus').className = 'status';
+          fetchAboutus();
+        } else {
+          document.getElementById('statusAboutus').textContent = textRes;
+          document.getElementById('statusAboutus').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusAboutus').textContent = 'เกิดข้อผิดพลาดในการบันทึก';
+        document.getElementById('statusAboutus').className = 'status error';
+      }
+    });
+    document.getElementById('addServiceCardForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!aboutusSha) {
+        document.getElementById('statusServiceCard').textContent = 'ไม่พบ sha ของไฟล์';
+        document.getElementById('statusServiceCard').className = 'status error';
+        return;
+      }
+      const alt = document.getElementById('newCardAlt').value;
+      const buttonText = document.getElementById('newCardBtnText').value;
+      const link = document.getElementById('newCardLink').value;
+      const fileInput = document.getElementById('newCardSvg');
+      if (!fileInput.files.length) {
+        document.getElementById('statusServiceCard').textContent = 'กรุณาเลือกไฟล์ SVG';
+        document.getElementById('statusServiceCard').className = 'status error';
+        return;
+      }
+      const formData = new FormData();
+      formData.append('svgfile', fileInput.files[0]);
+      formData.append('alt', alt);
+      formData.append('buttonText', buttonText);
+      formData.append('link', link);
+      formData.append('sha', aboutusSha);
+      try {
+        const res = await fetch(`${BASE_URL}/aboutus/service-card/add`, {
+          method: 'POST',
+          body: formData
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusServiceCard').textContent = textRes;
+          document.getElementById('statusServiceCard').className = 'status';
+          document.getElementById('newCardAlt').value = '';
+          document.getElementById('newCardBtnText').value = '';
+          document.getElementById('newCardLink').value = '';
+          document.getElementById('newCardSvg').value = '';
+          fetchAboutus();
+        } else {
+          document.getElementById('statusServiceCard').textContent = textRes;
+          document.getElementById('statusServiceCard').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusServiceCard').textContent = 'เกิดข้อผิดพลาดในการเพิ่ม service card';
+        document.getElementById('statusServiceCard').className = 'status error';
+      }
+    });
+    window.deleteServiceCard = async function(idx) {
+      if (!aboutusSha) {
+        document.getElementById('statusServiceCard').textContent = 'ไม่พบ sha ของไฟล์';
+        document.getElementById('statusServiceCard').className = 'status error';
+        return;
+      }
+      if (!confirm('ยืนยันการลบ service card นี้?')) return;
+      try {
+        const res = await fetch(`${BASE_URL}/aboutus/service-card/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ index: idx, sha: aboutusSha })
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusServiceCard').textContent = textRes;
+          document.getElementById('statusServiceCard').className = 'status';
+          fetchAboutus();
+        } else {
+          document.getElementById('statusServiceCard').textContent = textRes;
+          document.getElementById('statusServiceCard').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusServiceCard').textContent = 'เกิดข้อผิดพลาดในการลบ service card';
+        document.getElementById('statusServiceCard').className = 'status error';
+      }
+    }
+
+    // --- BlogSection Admin Logic ---
+    let blogSha = null;
+    let blogConfig = {};
+    let blogPosts = [];
+    async function fetchBlogSection() {
+      try {
+        const res = await fetch(`${BASE_URL}/blogsection-config`);
+        const data = await res.json();
+        blogSha = data.sha;
+        blogConfig = data;
+        blogPosts = data.blogPosts || [];
+        document.getElementById('blogEnvLeft').value = data.envText?.left || '';
+        document.getElementById('blogEnvRight').value = data.envText?.right || '';
+        document.getElementById('blogInteriorText').value = (data.interiorText || []).join('\n');
+        document.getElementById('blogJournalTitle').value = data.wellnessJournalTitle || '';
+        document.getElementById('blogReconnectTitle1').value = data.reconnectSection?.title1 || '';
+        document.getElementById('blogReconnectTitle2').value = data.reconnectSection?.title2 || '';
+        document.getElementById('blogReconnectDesc').value = data.reconnectSection?.desc || '';
+        document.getElementById('blogReconnectBtnText').value = data.reconnectSection?.button?.text || '';
+        document.getElementById('blogReconnectBtnUrl').value = data.reconnectSection?.button?.url || '';
+        renderBlogPosts();
+        document.getElementById('statusBlogSection').textContent = '';
+      } catch (e) {
+        document.getElementById('statusBlogSection').textContent = 'โหลดข้อมูลไม่สำเร็จ';
+        document.getElementById('statusBlogSection').className = 'status error';
+      }
+    }
+    function renderBlogPosts() {
+      const container = document.getElementById('blogPostsContainer');
+      container.innerHTML = '';
+      if (!blogPosts.length) {
+        container.innerHTML = '<div>ยังไม่มี blog post</div>';
+        return;
+      }
+      blogPosts.forEach((post, idx) => {
+        const div = document.createElement('div');
+        div.className = 'slide-preview';
+        const img = document.createElement('img');
+        img.className = 'slide-img';
+        // เปลี่ยน src ให้ใช้ backend proxy
+        img.src = `http://localhost:3000/blog-svg-preview/${post.image}`;
+        img.alt = post.alt;
+        const controls = document.createElement('div');
+        controls.className = 'slide-controls';
+        controls.innerHTML = `
+          <div class="slide-form-row">
+            <span class="slide-index">#${idx + 1}</span>
+            <input type="text" value="${post.alt.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" id="blogAlt${idx}" />
+            <input type="text" value="${post.title.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" id="blogTitle${idx}" />
+            <input type="text" value="${post.link.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}" id="blogLink${idx}" />
+            <button type="button" onclick="deleteBlogPost(${idx})" style="color:red;">ลบ</button>
+          </div>
+        `;
+        div.appendChild(img);
+        div.appendChild(controls);
+        container.appendChild(div);
+      });
+    }
+    document.getElementById('blogSectionForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!blogSha) {
+        document.getElementById('statusBlogSection').textContent = 'ไม่พบ sha ของไฟล์';
+        document.getElementById('statusBlogSection').className = 'status error';
+        return;
+      }
+      const body = {
+        blogSectionConfig: {
+          envText: {
+            left: document.getElementById('blogEnvLeft').value,
+            right: document.getElementById('blogEnvRight').value
+          },
+          interiorText: document.getElementById('blogInteriorText').value.split('\n').map(s => s.trim()).filter(Boolean),
+          wellnessJournalTitle: document.getElementById('blogJournalTitle').value,
+          blogPosts: blogPosts,
+          reconnectSection: {
+            title1: document.getElementById('blogReconnectTitle1').value,
+            title2: document.getElementById('blogReconnectTitle2').value,
+            desc: document.getElementById('blogReconnectDesc').value,
+            button: {
+              text: document.getElementById('blogReconnectBtnText').value,
+              url: document.getElementById('blogReconnectBtnUrl').value
+            }
+          }
+        },
+        sha: blogSha
+      };
+      try {
+        const res = await fetch(`${BASE_URL}/blogsection-config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusBlogSection').textContent = textRes;
+          document.getElementById('statusBlogSection').className = 'status';
+          fetchBlogSection();
+        } else {
+          document.getElementById('statusBlogSection').textContent = textRes;
+          document.getElementById('statusBlogSection').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusBlogSection').textContent = 'เกิดข้อผิดพลาดในการบันทึก';
+        document.getElementById('statusBlogSection').className = 'status error';
+      }
+    });
+    document.getElementById('addBlogPostForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!blogSha) {
+        document.getElementById('statusBlogPost').textContent = 'ไม่พบ sha ของไฟล์';
+        document.getElementById('statusBlogPost').className = 'status error';
+        return;
+      }
+      const alt = document.getElementById('newBlogAlt').value;
+      const title = document.getElementById('newBlogTitle').value;
+      const link = document.getElementById('newBlogLink').value;
+      const fileInput = document.getElementById('newBlogSvg');
+      if (!fileInput.files.length) {
+        document.getElementById('statusBlogPost').textContent = 'กรุณาเลือกไฟล์ SVG';
+        document.getElementById('statusBlogPost').className = 'status error';
+        return;
+      }
+      const formData = new FormData();
+      formData.append('svgfile', fileInput.files[0]);
+      formData.append('alt', alt);
+      formData.append('title', title);
+      formData.append('link', link);
+      formData.append('sha', blogSha);
+      try {
+        const res = await fetch(`${BASE_URL}/blogsection/blogpost/add`, {
+          method: 'POST',
+          body: formData
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusBlogPost').textContent = textRes;
+          document.getElementById('statusBlogPost').className = 'status';
+          document.getElementById('newBlogAlt').value = '';
+          document.getElementById('newBlogTitle').value = '';
+          document.getElementById('newBlogLink').value = '';
+          document.getElementById('newBlogSvg').value = '';
+          fetchBlogSection();
+        } else {
+          document.getElementById('statusBlogPost').textContent = textRes;
+          document.getElementById('statusBlogPost').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusBlogPost').textContent = 'เกิดข้อผิดพลาดในการเพิ่ม blog post';
+        document.getElementById('statusBlogPost').className = 'status error';
+      }
+    });
+    window.deleteBlogPost = async function(idx) {
+      if (!blogSha) {
+        document.getElementById('statusBlogPost').textContent = 'ไม่พบ sha ของไฟล์';
+        document.getElementById('statusBlogPost').className = 'status error';
+        return;
+      }
+      if (!confirm('ยืนยันการลบ blog post นี้?')) return;
+      try {
+        const res = await fetch(`${BASE_URL}/blogsection/blogpost/delete`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ index: idx, sha: blogSha })
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusBlogPost').textContent = textRes;
+          document.getElementById('statusBlogPost').className = 'status';
+          fetchBlogSection();
+        } else {
+          document.getElementById('statusBlogPost').textContent = textRes;
+          document.getElementById('statusBlogPost').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusBlogPost').textContent = 'เกิดข้อผิดพลาดในการลบ blog post';
+        document.getElementById('statusBlogPost').className = 'status error';
+      }
+    }
+
+    // --- Section: Contact ---
+    let contactSha = null;
+    let operationHours = [];
+    async function fetchContact() {
+      try {
+        const res = await fetch(`${BASE_URL}/contact-config`);
+        const data = await res.json();
+        contactSha = data.sha;
+        document.getElementById('contactTitle').value = data.title || '';
+        document.getElementById('contactPhone').value = data.phone || '';
+        document.getElementById('contactAddress').value = data.address || '';
+        document.getElementById('contactFbName').value = data.facebook?.name || '';
+        document.getElementById('contactFbUrl').value = data.facebook?.url || '';
+        document.getElementById('contactOpTitle').value = data.operationTitle || '';
+        document.getElementById('contactOpNote').value = data.operationNote || '';
+        operationHours = data.operationHours || [];
+        renderOperationHours();
+        document.getElementById('statusContact').textContent = '';
+      } catch (e) {
+        document.getElementById('statusContact').textContent = 'โหลดข้อมูลไม่สำเร็จ';
+        document.getElementById('statusContact').className = 'status error';
+      }
+    }
+    function renderOperationHours() {
+      const container = document.getElementById('operationHoursContainer');
+      container.innerHTML = '';
+      if (!operationHours.length) {
+        container.innerHTML = '<div>ยังไม่มีข้อมูลเวลา</div>';
+        return;
+      }
+      operationHours.forEach((row, idx) => {
+        const div = document.createElement('div');
+        div.className = 'op-hour-row';
+        div.innerHTML = `
+          <input type="text" value="${row.day}" id="opDay${idx}" placeholder="Day" />
+          <input type="text" value="${row.time}" id="opTime${idx}" placeholder="Time" />
+          <button type="button" onclick="deleteOpHour(${idx})" style="color:red;">ลบ</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+    function deleteOpHour(idx) {
+      operationHours.splice(idx, 1);
+      renderOperationHours();
+    }
+    document.getElementById('addOpHourBtn').addEventListener('click', function() {
+      operationHours.push({ day: '', time: '' });
+      renderOperationHours();
+    });
+    document.getElementById('contactForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!contactSha) {
+        document.getElementById('statusContact').textContent = 'ไม่พบ sha ของไฟล์';
+        document.getElementById('statusContact').className = 'status error';
+        return;
+      }
+      // เก็บ operationHours
+      const newOpHours = [];
+      for (let i = 0; i < operationHours.length; i++) {
+        const day = document.getElementById(`opDay${i}`).value;
+        const time = document.getElementById(`opTime${i}`).value;
+        newOpHours.push({ day, time });
+      }
+      const body = {
+        contactConfig: {
+          title: document.getElementById('contactTitle').value,
+          phone: document.getElementById('contactPhone').value,
+          address: document.getElementById('contactAddress').value,
+          facebook: {
+            name: document.getElementById('contactFbName').value,
+            url: document.getElementById('contactFbUrl').value
+          },
+          operationTitle: document.getElementById('contactOpTitle').value,
+          operationHours: newOpHours,
+          operationNote: document.getElementById('contactOpNote').value
+        },
+        sha: contactSha
+      };
+      try {
+        const res = await fetch(`${BASE_URL}/contact-config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusContact').textContent = textRes;
+          document.getElementById('statusContact').className = 'status';
+          fetchContact();
+        } else {
+          document.getElementById('statusContact').textContent = textRes;
+          document.getElementById('statusContact').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusContact').textContent = 'เกิดข้อผิดพลาดในการบันทึก';
+        document.getElementById('statusContact').className = 'status error';
+      }
+    });
+
+    // --- Section: Services ---
+    let servicesSha = null;
+    let servicesConfig = {};
+    let massageServices = [];
+    let facialServices = [];
+    let centerImages = [];
+    async function fetchServices() {
+      try {
+        const res = await fetch(`${BASE_URL}/services-config`);
+        const data = await res.json();
+        servicesSha = data.sha;
+        servicesConfig = data;
+        // Hero Image
+        document.getElementById('heroImgPreview').src = 'https://raw.githubusercontent.com/PtrwTg/Thainest/main/public/assets/images/servicesimg.svg?' + Date.now();
+        // Center Images
+        centerImages = data.hero.centerImages || [];
+        renderCenterImages();
+        // Book Button
+        document.getElementById('bookBtnText').value = data.bookBtn?.text || '';
+        document.getElementById('bookBtnUrl').value = data.bookBtn?.url || '';
+        // Massage Services
+        massageServices = data.massageServices || [];
+        renderMassageServices();
+        // Facial Services
+        facialServices = data.facialServices || [];
+        renderFacialServices();
+        document.getElementById('statusServices').textContent = '';
+      } catch (e) {
+        document.getElementById('statusServices').textContent = 'โหลดข้อมูลไม่สำเร็จ';
+        document.getElementById('statusServices').className = 'status error';
+      }
+    }
+    // Hero Image Upload
+    document.getElementById('heroImgInput').addEventListener('change', async function() {
+      const file = this.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append('svgfile', file);
+      formData.append('type', 'heroImg');
+      formData.append('filename', 'servicesimg.svg');
+      try {
+        const res = await fetch(`${BASE_URL}/services/upload-svg`, {
+          method: 'POST',
+          body: formData
+        });
+        if (res.ok) {
+          document.getElementById('heroImgPreview').src = 'https://raw.githubusercontent.com/PtrwTg/Thainest/main/public/assets/images/servicesimg.svg?' + Date.now();
+        }
+      } catch {}
+    });
+    // Center Images
+    function renderCenterImages() {
+      const container = document.getElementById('centerImagesContainer');
+      container.innerHTML = '';
+      centerImages.forEach((img, idx) => {
+        const filename = `4img${idx ? '2' : ''}.svg`;
+        const div = document.createElement('div');
+        div.className = 'center-img-row';
+        div.innerHTML = `
+          <input type="file" accept=".svg" id="centerImgInput${idx}" />
+          <img src="https://raw.githubusercontent.com/PtrwTg/Thainest/main/public/assets/images/${filename}?${Date.now()}" style="max-width:80px;vertical-align:middle;" />
+          <input type="text" value="${img.title}" id="centerImgTitle${idx}" placeholder="Title" />
+          <input type="text" value="${img.alt}" id="centerImgAlt${idx}" placeholder="Alt" />
+          <input type="text" value="${img.scrollTo}" id="centerImgScroll${idx}" placeholder="ScrollTo" />
+        `;
+        container.appendChild(div);
+        document.getElementById(`centerImgInput${idx}`).addEventListener('change', async function() {
+          const file = this.files[0];
+          if (!file) return;
+          const formData = new FormData();
+          formData.append('svgfile', file);
+          formData.append('type', 'centerImage');
+          formData.append('filename', filename);
+          await fetch(`${BASE_URL}/services/upload-svg`, {
+            method: 'POST',
+            body: formData
+          });
+          renderCenterImages();
+        });
+      });
+    }
+    // Massage Services
+    function renderMassageServices() {
+      const container = document.getElementById('massageServicesContainer');
+      container.innerHTML = '';
+      massageServices.forEach((card, idx) => {
+        const imgName = card.img.replace(/^.*[\\\/]/, '');
+        const div = document.createElement('div');
+        div.className = 'service-card-row';
+        div.innerHTML = `
+          <input type="text" value="${card.title}" id="massageTitle${idx}" placeholder="Title" />
+          <input type="text" value="${card.desc}" id="massageDesc${idx}" placeholder="Desc" />
+          <input type="file" accept=".svg" id="massageImgInput${idx}" />
+          <img src="https://raw.githubusercontent.com/PtrwTg/Thainest/main/public/assets/images/${imgName}?${Date.now()}" style="max-width:60px;vertical-align:middle;" />
+          <button type="button" onclick="deleteMassageCard(${idx})" style="color:red;">ลบ</button>
+        `;
+        container.appendChild(div);
+        document.getElementById(`massageImgInput${idx}`).addEventListener('change', async function() {
+          const file = this.files[0];
+          if (!file) return;
+          const formData = new FormData();
+          formData.append('svgfile', file);
+          formData.append('type', 'massageCard');
+          formData.append('filename', imgName);
+          await fetch(`${BASE_URL}/services/upload-svg`, {
+            method: 'POST',
+            body: formData
+          });
+          renderMassageServices();
+        });
+      });
+    }
+    window.deleteMassageCard = function(idx) {
+      massageServices.splice(idx, 1);
+      renderMassageServices();
+    }
+    // Facial Services
+    function renderFacialServices() {
+      const container = document.getElementById('facialServicesContainer');
+      container.innerHTML = '';
+      facialServices.forEach((card, idx) => {
+        const imgName = card.img.replace(/^.*[\\\/]/, '');
+        const div = document.createElement('div');
+        div.className = 'service-card-row';
+        div.innerHTML = `
+          <input type="text" value="${card.title}" id="facialTitle${idx}" placeholder="Title" />
+          <input type="text" value="${card.desc}" id="facialDesc${idx}" placeholder="Desc" />
+          <input type="file" accept=".svg" id="facialImgInput${idx}" />
+          <img src="https://raw.githubusercontent.com/PtrwTg/Thainest/main/public/assets/images/${imgName}?${Date.now()}" style="max-width:60px;vertical-align:middle;" />
+          <button type="button" onclick="deleteFacialCard(${idx})" style="color:red;">ลบ</button>
+        `;
+        container.appendChild(div);
+        document.getElementById(`facialImgInput${idx}`).addEventListener('change', async function() {
+          const file = this.files[0];
+          if (!file) return;
+          const formData = new FormData();
+          formData.append('svgfile', file);
+          formData.append('type', 'facialCard');
+          formData.append('filename', imgName);
+          await fetch(`${BASE_URL}/services/upload-svg`, {
+            method: 'POST',
+            body: formData
+          });
+          renderFacialServices();
+        });
+      });
+    }
+    window.deleteFacialCard = function(idx) {
+      facialServices.splice(idx, 1);
+      renderFacialServices();
+    }
+    document.getElementById('addMassageCardBtn').addEventListener('click', function() {
+      const nextNum = massageServices.length + 1;
+      massageServices.push({ img: `/assets/images/${nextNum}.svg`, title: '', desc: '' });
+      renderMassageServices();
+    });
+    document.getElementById('addFacialCardBtn').addEventListener('click', function() {
+      const nextNum = facialServices.length + 1;
+      facialServices.push({ img: `/assets/images/${nextNum+8}.svg`, title: '', desc: '' });
+      renderFacialServices();
+    });
+    // Form submit
+    document.getElementById('servicesForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (!servicesSha) {
+        document.getElementById('statusServices').textContent = 'ไม่พบ sha ของไฟล์';
+        document.getElementById('statusServices').className = 'status error';
+        return;
+      }
+      // เก็บค่าจาก form
+      // hero, centerImages
+      centerImages.forEach((img, idx) => {
+        img.title = document.getElementById(`centerImgTitle${idx}`).value;
+        img.alt = document.getElementById(`centerImgAlt${idx}`).value;
+        img.scrollTo = document.getElementById(`centerImgScroll${idx}`).value;
+      });
+      // massageServices
+      massageServices.forEach((card, idx) => {
+        card.title = document.getElementById(`massageTitle${idx}`).value;
+        card.desc = document.getElementById(`massageDesc${idx}`).value;
+      });
+      // facialServices
+      facialServices.forEach((card, idx) => {
+        card.title = document.getElementById(`facialTitle${idx}`).value;
+        card.desc = document.getElementById(`facialDesc${idx}`).value;
+      });
+      const body = {
+        servicesConfig: {
+          hero: {
+            ...servicesConfig.hero,
+            centerImages: centerImages
+          },
+          massageServices: massageServices,
+          facialServices: facialServices,
+          bookBtn: {
+            text: document.getElementById('bookBtnText').value,
+            url: document.getElementById('bookBtnUrl').value
+          }
+        },
+        sha: servicesSha
+      };
+      try {
+        const res = await fetch(`${BASE_URL}/services-config`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const textRes = await res.text();
+        if (res.ok) {
+          document.getElementById('statusServices').textContent = textRes;
+          document.getElementById('statusServices').className = 'status';
+          fetchServices();
+        } else {
+          document.getElementById('statusServices').textContent = textRes;
+          document.getElementById('statusServices').className = 'status error';
+        }
+      } catch (e) {
+        document.getElementById('statusServices').textContent = 'เกิดข้อผิดพลาดในการบันทึก';
+        document.getElementById('statusServices').className = 'status error';
+      }
+    });
+
+    // --- Section: Toggle Section by File ---
+    function showSectionByFile(filename) {
+      document.getElementById('sectionSlides').style.display = (filename === 'Slider.jsx') ? '' : 'none';
+      document.getElementById('sectionBuyVoucher').style.display = (filename === 'Slider.jsx') ? '' : 'none';
+      document.getElementById('sectionNestWelcome').style.display = (filename === 'NestWelcome.jsx') ? '' : 'none';
+      document.getElementById('sectionAboutus').style.display = (filename === 'Aboutus.jsx') ? '' : 'none';
+      document.getElementById('sectionBlogSection').style.display = (filename === 'BlogSection.jsx') ? '' : 'none';
+      document.getElementById('sectionContact').style.display = (filename === 'Contact.jsx') ? '' : 'none';
+      document.getElementById('sectionServices').style.display = (filename === 'Services.jsx') ? '' : 'none';
+    }
+    // โหลดข้อมูลเมื่อเลือกไฟล์
+    document.getElementById('fileSelect').addEventListener('change', function() {
+      const filename = this.value;
+      showSectionByFile(filename);
+      if (filename === 'Slider.jsx') {
+        fetchSlides();
+        fetchButton();
+      } else if (filename === 'NestWelcome.jsx') {
+        fetchNestWelcome();
+      } else if (filename === 'Aboutus.jsx') {
+        fetchAboutus();
+      } else if (filename === 'BlogSection.jsx') {
+        fetchBlogSection();
+      } else if (filename === 'Contact.jsx') {
+        fetchContact();
+      } else if (filename === 'Services.jsx') {
+        fetchServices();
+        document.getElementById('sectionServices').style.display = '';
+      }
+    });
+    // โหลดข้อมูลทั้งหมดเมื่อเปิดหน้า (แต่แสดงเฉพาะ section ที่เลือก)
+    fetchSlides();
+    fetchButton();
+    fetchNestWelcome();
+    fetchAboutus();
+    fetchBlogSection();
+    fetchContact();
+    fetchServices(); // เพิ่มการโหลดข้อมูล Services ทั้งหมด
+    showSectionByFile(document.getElementById('fileSelect').value);
+  </script>
+</body>
+</html>
